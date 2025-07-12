@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Resume Parser</title>
+    <style>
+        .result-item {
+            transition: all 0.2s ease;
+        }
+        .result-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white">
+    <!-- Background Elements -->
+    <svg class="absolute inset-0 -z-10 h-full w-full stroke-white/10 [mask-image:radial-gradient(100%_100%_at_top_right,white,transparent)]" aria-hidden="true">
+        <defs>
+            <pattern id="pattern" width="200" height="200" x="50%" y="-1" patternUnits="userSpaceOnUse">
+                <path d="M.5 200V.5H200" fill="none" />
+            </pattern>
+        </defs>
+        <svg x="50%" y="-1" class="overflow-visible fill-gray-800/20">
+            <path d="M-200 0h201v201h-201Z M600 0h201v201h-201Z M-400 600h201v201h-201Z M200 800h201v201h-201Z" stroke-width="0" />
+        </svg>
+        <rect width="100%" height="100%" stroke-width="0" fill="url(#pattern)" />
+    </svg>
+
+    <!-- Main Content -->
+    <div class="mx-auto max-w-7xl px-6 py-12 lg:flex lg:px-8">
+        <div class="mx-auto max-w-2xl lg:mx-0 lg:max-w-xl lg:py-16">
+            <!-- Logo and Header -->
+            <img class="h-11" src="https://res.cloudinary.com/dtsuvx8dz/image/upload/v1706986565/hqatxpsjdg3zeql20jfe.png" alt="Company Logo">
+            <div class="mt-8">
+                <span class="inline-flex items-center rounded-full bg-blue-500/10 px-3 py-1 text-sm font-semibold text-blue-400 ring-1 ring-inset ring-blue-500/20">
+                    Latest Version
+                </span>
+            </div>
+            
+            <!-- Main Heading -->
+            <h1 class="mt-6 text-4xl font-bold tracking-tight sm:text-5xl">
+                Revolutionize Your Recruitment with Next-Gen Resume Parsing
+            </h1>
+            <p class="mt-4 text-lg leading-8 text-gray-300">
+                Unlock the potential of every application with our advanced resume parser.
+            </p>
+            
+            <!-- Upload Form -->
+            <form action="/process" method="post" enctype="multipart/form-data" class="mt-8">
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <input type="file" name="pdf_doc" id="pdf_doc" accept=".pdf" required
+                        class="file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 w-full sm:w-auto">
+                    <button type="submit" 
+                        class="bg-blue-600 hover:bg-blue-500 px-6 py-2.5 rounded-full text-sm font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">
+                        Process Resume
+                    </button>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Right Side Image -->
+        <div class="mx-auto mt-16 flex max-w-2xl lg:ml-40 lg:mt-40 lg:max-w-none">
+            <div class="max-w-3xl">
+                <img src="https://res.cloudinary.com/dtsuvx8dz/image/upload/v1716357077/o1imiun4wwcpia9uucgs.gif"
+                    alt="App demo" class="w-[20rem] rounded-md bg-white/5 shadow-2xl ring-1 ring-white/10">
+            </div>
+        </div>
+    </div>
+
+    <!-- Results Section -->
+    <div class="mx-auto px-6 pb-16 w-full">
+        <!-- Error Display -->
+        {% if error %}
+        <div class="bg-red-500/10 border border-red-500/50 text-red-300 p-4 rounded-lg mb-6 max-w-7xl mx-auto">
+            <strong>Error:</strong> {{ error }}
+        </div>
+        {% endif %}
+        
+        <!-- Results Container -->
+        <div id="results" class="max-w-7xl mx-auto bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl overflow-hidden">
+            {% if data %}
+            <div class="p-6 space-y-6">
+                <!-- Personal Info -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="result-item bg-gray-700/30 p-4 rounded-lg">
+                        <h3 class="text-xl font-bold text-blue-300 mb-3">Personal Information</h3>
+                        <div class="space-y-2">
+                            {% if data.full_name %}<p><span class="font-semibold">Name:</span> {{ data.full_name }}</p>{% endif %}
+                            {% if data.email_id %}<p><span class="font-semibold">Email:</span> {{ data.email_id }}</p>{% endif %}
+                            {% if data.github_portfolio %}<p><span class="font-semibold">GitHub:</span> <a href="{{ data.github_portfolio }}" class="text-blue-300 hover:underline" target="_blank">{{ data.github_portfolio }}</a></p>{% endif %}
+                            {% if data.linkedin_id %}<p><span class="font-semibold">LinkedIn:</span> <a href="{{ data.linkedin_id }}" class="text-blue-300 hover:underline" target="_blank">{{ data.linkedin_id }}</a></p>{% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Rating -->
+                    {% if data.practical_rating %}
+                    <div class="result-item bg-gray-700/30 p-4 rounded-lg">
+                        <h3 class="text-xl font-bold text-blue-300 mb-3">Resume Rating</h3>
+                        <div class="flex items-center">
+                            <span class="text-3xl font-bold mr-4">{{ data.practical_rating }}/10</span>
+                            <div class="w-full bg-gray-600 rounded-full h-2.5">
+                                <div class="bg-blue-500 h-2.5 rounded-full" style="width: {{ data.practical_rating * 10 }}%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Employment Details -->
+                {% if data.employment_details %}
+                <div class="result-item bg-gray-700/30 p-4 rounded-lg">
+                    <h3 class="text-xl font-bold text-blue-300 mb-3">Employment History</h3>
+                    <div class="space-y-4">
+                        {% if data.employment_details is string %}
+                            <p>{{ data.employment_details }}</p>
+                        {% else %}
+                            {% for item in data.employment_details %}
+                                <div class="border-l-2 border-blue-400 pl-4">
+                                    <p class="font-medium">{{ item }}</p>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+                
+                <!-- Skills -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {% if data.technical_skills %}
+                    <div class="result-item bg-gray-700/30 p-4 rounded-lg">
+                        <h3 class="text-xl font-bold text-blue-300 mb-3">Technical Skills</h3>
+                        <div class="flex flex-wrap gap-2">
+                            {% if data.technical_skills is string %}
+                                <p>{{ data.technical_skills }}</p>
+                            {% else %}
+                                {% for skill in data.technical_skills %}
+                                    <span class="bg-blue-500/10 text-blue-300 px-3 py-1 rounded-full text-sm">{{ skill }}</span>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    {% if data.soft_skills %}
+                    <div class="result-item bg-gray-700/30 p-4 rounded-lg">
+                        <h3 class="text-xl font-bold text-blue-300 mb-3">Soft Skills</h3>
+                        <div class="flex flex-wrap gap-2">
+                            {% if data.soft_skills is string %}
+                                <p>{{ data.soft_skills }}</p>
+                            {% else %}
+                                {% for skill in data.soft_skills %}
+                                    <span class="bg-green-500/10 text-green-300 px-3 py-1 rounded-full text-sm">{{ skill }}</span>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Recommendations -->
+                {% if data.recommended_job_roles %}
+                <div class="result-item bg-gray-700/30 p-4 rounded-lg">
+                    <h3 class="text-xl font-bold text-blue-300 mb-3">Recommended Roles</h3>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        {% for role in data.recommended_job_roles %}
+                            <div class="bg-gray-600/20 p-3 rounded-lg text-center">
+                                <p class="font-medium">{{ role }}</p>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+                
+                <!-- Pros/Cons -->
+                {% if data.pros_and_cons %}
+                <div class="result-item bg-gray-700/30 p-4 rounded-lg">
+                    <h3 class="text-xl font-bold text-blue-300 mb-3">Strengths & Areas for Improvement</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <h4 class="font-bold text-green-300 mb-2">Strengths</h4>
+                            <ul class="list-disc list-inside space-y-1">
+                                {% if data.pros_and_cons.pros is string %}
+                                    <li>{{ data.pros_and_cons.pros }}</li>
+                                {% else %}
+                                    {% for pro in data.pros_and_cons.pros %}
+                                        <li>{{ pro }}</li>
+                                    {% endfor %}
+                                {% endif %}
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-red-300 mb-2">Areas for Improvement</h4>
+                            <ul class="list-disc list-inside space-y-1">
+                                {% if data.pros_and_cons.cons is string %}
+                                    <li>{{ data.pros_and_cons.cons }}</li>
+                                {% else %}
+                                    {% for con in data.pros_and_cons.cons %}
+                                        <li>{{ con }}</li>
+                                    {% endfor %}
+                                {% endif %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                
+                <!-- Suggestions -->
+                {% if data.suggestion %}
+                <div class="result-item bg-gray-700/30 p-4 rounded-lg">
+                    <h3 class="text-xl font-bold text-blue-300 mb-3">Resume Enhancement Suggestions</h3>
+                    <div class="space-y-3">
+                        {% if data.suggestion is string %}
+                            <p>{{ data.suggestion }}</p>
+                        {% else %}
+                            {% for suggestion in data.suggestion %}
+                                <div class="flex items-start">
+                                    <span class="flex-shrink-0 mt-1 mr-2">•</span>
+                                    <p>{{ suggestion }}</p>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>
