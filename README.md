@@ -9,7 +9,8 @@ To build such an app, you can leverage various tools and libraries, including Py
 The app's functionality aligns with the growing need for streamlined recruitment processes and the increasing reliance on technology to evaluate and process job applications. By providing users with a detailed analysis of their resumes, the app empowers job seekers to optimize their resumes for better visibility and compatibility with ATS.
 
 ### Sneak Peak of the App
-![image](https://github.com/pik1989/Resume-Parser-OpenAI/assets/34673684/5d206207-1b25-4dbe-8e11-add701b632e7)
+![image](<img width="1901" height="2348" alt="127 0 0 1_8000_process" src="https://github.com/user-attachments/assets/d033830c-9a25-49b7-a5a3-319851504f39" />)
+
 
 #### Overview: 
 This App is created for job seekers to test whether their resumes are ATS friendly or not, if our App is able to parse your details and show it, then assume that everything is good.
