@@ -9,7 +9,8 @@ To build such an app, you can leverage various tools and libraries, including Py
 The app's functionality aligns with the growing need for streamlined recruitment processes and the increasing reliance on technology to evaluate and process job applications. By providing users with a detailed analysis of their resumes, the app empowers job seekers to optimize their resumes for better visibility and compatibility with ATS.
 
 ### Sneak Peak of the App
-![image]("https://github.com/user-attachments/assets/d033830c-9a25-49b7-a5a3-319851504f39")
+![image](https://github.com/user-attachments/assets/c812afc7-06e6-444d-bc8f-b4228f13845f)
+
 
 
 #### Overview: 
