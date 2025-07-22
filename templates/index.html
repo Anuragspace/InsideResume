@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>AI Resume Parser - Smart Recruitment Solution</title>
+    <meta name="description" content="Advanced AI-powered resume parser using Google Gemini for comprehensive candidate analysis">
+    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📄</text></svg>">
+    
+    <!-- Custom Tailwind Configuration -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-in',
+                        'slide-up': 'slideUp 0.6s ease-out'
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes slideUp {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1f2937;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #3b82f6;
+            border-radius: 4px;
+        }
+        
+        /* Fix body and html to prevent white lines */
+        html, body {
+            margin: 0;
+            padding: 0;
+            background-color: #111827;
+            min-height: 100vh;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 min-h-screen">
+    <div class="relative isolate overflow-hidden bg-gray-900 min-h-screen">
+        <svg class="absolute inset-0 -z-10 h-full w-full stroke-white/10 [mask-image:radial-gradient(100%_100%_at_top_right,white,transparent)]"
+            aria-hidden="true">
+            <defs>
+                <pattern id="983e3e4c-de6d-4c3f-8d64-b9761d1534cc" width="200" height="200" x="50%" y="-1"
+                    patternUnits="userSpaceOnUse">
+                    <path d="M.5 200V.5H200" fill="none" />
+                </pattern>
+            </defs>
+            <svg x="50%" y="-1" class="overflow-visible fill-gray-800/20">
+                <path d="M-200 0h201v201h-201Z M600 0h201v201h-201Z M-400 600h201v201h-201Z M200 800h201v201h-201Z"
+                    stroke-width="0" />
+            </svg>
+            <rect width="100%" height="100%" stroke-width="0" fill="url(#983e3e4c-de6d-4c3f-8d64-b9761d1534cc)" />
+        </svg>
+        <div class="absolute left-[calc(50%-4rem)] top-10 -z-10 transform-gpu blur-3xl sm:left-[calc(50%-18rem)] lg:left-48 lg:top-[calc(50%-30rem)] xl:left-[calc(50%-24rem)]"
+            aria-hidden="true">
+            <div class="aspect-[1108/632] w-[69.25rem] bg-gradient-to-r from-[#80caff] to-[#4f46e5] opacity-20"
+                style="clip-path: polygon(73.6% 51.7%, 91.7% 11.8%, 100% 46.4%, 97.4% 82.2%, 92.5% 84.9%, 75.7% 64%, 55.3% 47.5%, 46.5% 49.4%, 45% 62.9%, 50.3% 87.2%, 21.3% 64.1%, 0.1% 100%, 5.4% 51.1%, 21.4% 63.9%, 58.9% 0.2%, 73.6% 51.7%)">
+            </div>
+        </div>
+        <!-- Navigation Bar -->
+        <nav class="flex items-center justify-between px-6 py-4 border-b border-gray-800">
+            <!-- Logo and branding - left side -->
+            <div class="flex items-center space-x-3">
+                <div class="h-8 w-8 bg-gradient-to-br from-blue-400 to-blue-800 rounded-lg flex items-center justify-center shadow-lg">
+                    <svg class="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                </div>
+                <h2 class="text-xl font-bold text-white">InsightResume</h2>
+            </div>
+            
+            <!-- Right side - LinkedIn -->
+            <div class="flex items-center space-x-4">
+                <a href="https://www.linkedin.com/in/adarshanurag/" target="_blank" class="flex items-center space-x-2 px-3 py-1 rounded-lg bg-blue-600/20 hover:bg-blue-600/30 transition-colors">
+                    <svg class="w-4 h-4 text-white/70" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M16.338 16.338H13.67V12.16c0-.995-.017-2.277-1.387-2.277-1.39 0-1.601 1.086-1.601 2.207v4.248H8.014v-8.59h2.559v1.174h.037c.356-.675 1.227-1.387 2.526-1.387 2.703 0 3.203 1.778 3.203 4.092v4.711zM5.005 6.575a1.548 1.548 0 11-.003-3.096 1.548 1.548 0 01.003 3.096zm-1.337 9.763H6.34v-8.59H3.667v8.59zM17.668 1H2.328C1.595 1 1 1.581 1 2.298v15.403C1 18.418 1.595 19 2.328 19h15.34c.734 0 1.332-.582 1.332-1.299V2.298C19 1.581 18.402 1 17.668 1z" clip-rule="evenodd"/>
+                    </svg>
+                    <span class="text-white/80 text-sm font-medium">LinkedIn</span>
+                </a>
+                
+            </div>
+        </nav>
+
+        <!-- Main Hero Content -->
+        <div class="flex items-center justify-center min-h-[calc(100vh-140px)] px-6 py-8">
+            <div class="w-full max-w-6xl">
+                <!-- Main headline and upload section -->
+                <div class="grid lg:grid-cols-2 gap-12 items-center">
+                    <!-- Left Side - Content -->
+                    <div class="space-y-6">
+                        <!-- Powered by Gemini badge - aligned left with heading -->
+                        <div class="text-left">
+                            <span class="inline-flex items-center rounded-full bg-gradient-to-r from-green-500/10 to-emerald-500/10 px-4 py-2 text-sm font-medium text-green-400 ring-1 ring-inset ring-green-500/20 shadow-lg">
+                                🚀 Powered by Google Gemini 2.5 Flash
+                            </span>
+                        </div>
+
+                        <!-- Main headline -->
+                        <h1 class="text-4xl lg:text-5xl font-bold text-white leading-tight">
+                            Intelligent Resume
+                            <span class="text-blue-400 block">Parsing & Insights</span>
+                        </h1>
+                        
+                        <!-- Description -->
+                        <p class="text-lg text-gray-300 leading-relaxed">
+                            Get precise insights and an ATS edge with our AI resume analyzer.
+                        </p>
+                        
+                        <!-- Trust indicators -->
+                        <div class="flex items-center space-x-6 text-sm text-gray-400">
+                            <div class="flex items-center space-x-2">
+                                <svg class="w-4 h-4 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/>
+                                </svg>
+                                <span>Secure</span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <svg class="w-4 h-4 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                </svg>
+                                <span>Instant Analysis</span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <svg class="w-4 h-4 text-purple-400" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                <span>AI-Powered</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Side - Upload Form -->
+                    <div class="space-y-6">
+                        <form action="/process" method="post" enctype="multipart/form-data">
+                            <div class="space-y-4">
+                                <!-- File Upload Area -->
+                                <div class="relative group">
+                                    <input type="file" 
+                                           name="pdf_doc" 
+                                           id="pdf_doc" 
+                                           accept=".pdf"
+                                           required
+                                           class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                                           onchange="updateFileName()">
+                                    
+                                    <div id="upload-area" class="border-2 border-dashed border-gray-600 rounded-xl p-8 text-center 
+                                                bg-gradient-to-br from-gray-800/30 to-gray-900/30 backdrop-blur-sm 
+                                                hover:border-blue-500 hover:bg-gradient-to-br hover:from-blue-900/20 hover:to-blue-800/20 
+                                                transition-all duration-300 shadow-lg">
+                                        <div id="upload-content">
+                                            <div class="mx-auto h-16 w-16 text-gray-400 mb-4">
+                                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" class="w-full h-full">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" 
+                                                          d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                                                </svg>
+                                            </div>
+                                            <h3 class="text-xl font-semibold text-white mb-2">Upload Your Resume</h3>
+                                            <p class="text-gray-400 text-sm mb-1">Drag & drop your PDF file here</p>
+                                            <p class="text-gray-500 text-xs">or click to browse (PDF only, max 10MB)</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Analyze Button -->
+                                <button type="submit"
+                                        id="analyze-btn"
+                                        disabled
+                                        class="w-full bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 
+                                               disabled:from-gray-700 disabled:to-gray-700 disabled:cursor-not-allowed disabled:opacity-50
+                                               px-6 py-4 rounded-xl text-lg font-medium text-white 
+                                               transition-all duration-200 shadow-lg hover:shadow-blue-500/25">
+                                    <span id="btn-text" class="flex items-center justify-center">
+                                        <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                                        </svg>
+                                        Select PDF to Analyze
+                                    </span>
+                                    <svg id="loading-spinner" class="hidden animate-spin w-5 h-5 text-white mx-auto" fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Feature highlights - positioned below main content -->
+                <div class="mt-24">
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm max-w-4xl mx-auto">
+                        <div class="flex items-center space-x-3 p-3 rounded-lg bg-gradient-to-br from-blue-500/10 to-blue-700/10 backdrop-blur-sm border border-blue-500/20 shadow-lg">
+                            <div class="h-2 w-2 bg-gradient-to-r from-blue-400 to-blue-600 rounded-full shadow-sm"></div>
+                            <span class="text-gray-300">ATS Score</span>
+                        </div>
+                        <div class="flex items-center space-x-3 p-3 rounded-lg bg-gradient-to-br from-green-500/10 to-emerald-700/10 backdrop-blur-sm border border-green-500/20 shadow-lg">
+                            <div class="h-2 w-2 bg-gradient-to-r from-green-400 to-emerald-600 rounded-full shadow-sm"></div>
+                            <span class="text-gray-300">Skill Analysis</span>
+                        </div>
+                        <div class="flex items-center space-x-3 p-3 rounded-lg bg-gradient-to-br from-purple-500/10 to-purple-700/10 backdrop-blur-sm border border-purple-500/20 shadow-lg">
+                            <div class="h-2 w-2 bg-gradient-to-r from-purple-400 to-purple-600 rounded-full shadow-sm"></div>
+                            <span class="text-gray-300">Job Matching</span>
+                        </div>
+                        <div class="flex items-center space-x-3 p-3 rounded-lg bg-gradient-to-br from-yellow-500/10 to-orange-700/10 backdrop-blur-sm border border-yellow-500/20 shadow-lg">
+                            <div class="h-2 w-2 bg-gradient-to-r from-yellow-400 to-orange-600 rounded-full shadow-sm"></div>
+                            <span class="text-gray-300">Improvements</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Enhanced Results Section -->
+        <div class="w-full min-h-screen pb-16" id="results-section" style="display: none;">
+            <div class="max-w-7xl mx-auto px-6 pt-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold text-white mb-4">Resume Analysis Results</h2>
+                    <p class="text-gray-300">Comprehensive AI-powered analysis of the uploaded resume</p>
+                </div>
+                
+                <div id="dictionaryValues" class="space-y-6"></div>
+            </div>
+        </div>
+
+        {% if data %}
+        <script>
+            // Show results section
+            document.getElementById('results-section').style.display = 'block';
+            
+            function displayDictionaryValues(data) {
+                const container = document.getElementById("dictionaryValues");
+                container.innerHTML = generateModernHTML(data);
+                
+                // Show results section
+                document.getElementById('results-section').style.display = 'block';
+                
+                // Add scroll indicator
+                addScrollIndicator();
+                
+                // Auto-scroll to results after a brief delay
+                setTimeout(() => {
+                    document.getElementById('results-section').scrollIntoView({ 
+                        behavior: 'smooth' 
+                    });
+                }, 1000);
+            }
+
+            function generateModernHTML(data) {
+                let html = '<div class="grid gap-6">';
+                
+                // Basic Information Card
+                if (data.full_name || data.email_id || data.phone_number) {
+                    html += `
+                    <div class="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-6 border border-gray-700">
+                        <h3 class="text-xl font-semibold text-white mb-4 flex items-center">
+                            <svg class="w-5 h-5 mr-2 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
+                            </svg>
+                            Personal Information
+                        </h3>
+                        <div class="grid md:grid-cols-2 gap-4">
+                            ${data.full_name ? `<div><span class="text-gray-400">Name:</span> <span class="text-white font-medium">${data.full_name}</span></div>` : ''}
+                            ${data.email_id ? `<div><span class="text-gray-400">Email:</span> <span class="text-blue-400">${data.email_id}</span></div>` : ''}
+                            ${data.phone_number ? `<div><span class="text-gray-400">Phone:</span> <span class="text-white">${data.phone_number}</span></div>` : ''}
+                            ${data.location ? `<div><span class="text-gray-400">Location:</span> <span class="text-white">${data.location}</span></div>` : ''}
+                        </div>
+                        ${data.linkedin_id || data.github_portfolio ? `
+                        <div class="mt-4 flex flex-wrap gap-2">
+                            ${data.linkedin_id ? `<a href="${data.linkedin_id}" class="inline-flex items-center px-3 py-1 rounded-full text-xs bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 transition-colors">LinkedIn</a>` : ''}
+                            ${data.github_portfolio ? `<a href="${data.github_portfolio}" class="inline-flex items-center px-3 py-1 rounded-full text-xs bg-gray-500/20 text-gray-400 hover:bg-gray-500/30 transition-colors">GitHub</a>` : ''}
+                        </div>` : ''}
+                    </div>`;
+                }
+                
+                // ATS Score Card
+                if (data.ats_score !== undefined) {
+                    const score = data.ats_score;
+                    const scoreColor = score >= 80 ? 'text-green-400' : score >= 60 ? 'text-yellow-400' : 'text-red-400';
+                    const bgColor = score >= 80 ? 'bg-green-500/20' : score >= 60 ? 'bg-yellow-500/20' : 'bg-red-500/20';
+                    
+                    html += `
+                    <div class="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-6 border border-gray-700">
+                        <h3 class="text-xl font-semibold text-white mb-4 flex items-center">
+                            <svg class="w-5 h-5 mr-2 text-purple-400" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            ATS Compatibility Score
+                        </h3>
+                        <div class="flex items-center space-x-4">
+                            <div class="relative w-20 h-20">
+                                <svg class="w-20 h-20 transform -rotate-90" viewBox="0 0 36 36">
+                                    <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#374151" stroke-width="2"/>
+                                    <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="${score}, 100" class="${scoreColor}"/>
+                                </svg>
+                                <div class="absolute inset-0 flex items-center justify-center">
+                                    <span class="text-2xl font-bold ${scoreColor}">${score}</span>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="text-2xl font-bold ${scoreColor}">${score}/100</div>
+                                <div class="text-sm text-gray-400">ATS Compatibility</div>
+                            </div>
+                        </div>
+                    </div>`;
+                }
+                
+                // Professional Summary
+                if (data.professional_summary) {
+                    html += `
+                    <div class="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-6 border border-gray-700">
+                        <h3 class="text-xl font-semibold text-white mb-4">Professional Summary</h3>
+                        <p class="text-gray-300 leading-relaxed">${data.professional_summary}</p>
+                    </div>`;
+                }
+                
+                // Technical Skills
+                if (data.technical_skills && typeof data.technical_skills === 'object') {
+                    html += `
+                    <div class="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-6 border border-gray-700">
+                        <h3 class="text-xl font-semibold text-white mb-4 flex items-center">
+                            <svg class="w-5 h-5 mr-2 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"></path>
+                            </svg>
+                            Technical Skills
+                        </h3>
+                        <div class="space-y-4">`;
+                    
+                    for (const [category, skills] of Object.entries(data.technical_skills)) {
+                        if (Array.isArray(skills) && skills.length > 0) {
+                            html += `
+                            <div>
+                                <h4 class="text-sm font-medium text-gray-400 mb-2 capitalize">${category.replace('_', ' ')}</h4>
+                                <div class="flex flex-wrap gap-2">
+                                    ${skills.map(skill => `<span class="px-3 py-1 bg-blue-500/20 text-blue-300 rounded-full text-sm">${skill}</span>`).join('')}
+                                </div>
+                            </div>`;
+                        }
+                    }
+                    html += '</div></div>';
+                }
+                
+                // Certifications Section
+                if (data.certifications && Array.isArray(data.certifications) && data.certifications.length > 0 && data.certifications[0] !== "Could not extract") {
+                    html += `
+                    <div class="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-6 border border-gray-700">
+                        <h3 class="text-xl font-semibold text-white mb-4 flex items-center">
+                            <svg class="w-5 h-5 mr-2 text-indigo-400" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            </svg>
+                            Certifications
+                        </h3>
+                        <div class="grid gap-3">
+                            ${data.certifications.map(cert => `
+                                <div class="flex items-center space-x-3 p-3 bg-indigo-500/10 rounded-lg border border-indigo-500/20">
+                                    <svg class="w-4 h-4 text-indigo-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                    </svg>
+                                    <span class="text-gray-300 font-medium">${cert}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>`;
+                }
+                
+                // Add more sections for employment, education, projects, etc.
+                // Employment Details
+                if (data.employment_details && Array.isArray(data.employment_details)) {
+                    html += generateEmploymentSection(data.employment_details);
+                }
+                
+                // Education Section
+                if (data.education && Array.isArray(data.education) && data.education.length > 0 && !data.education[0].error) {
+                    html += generateEducationSection(data.education);
+                }
+                
+                // Projects
+                if (data.projects_and_research && Array.isArray(data.projects_and_research)) {
+                    html += generateProjectsSection(data.projects_and_research);
+                }
+                
+                // Areas of Improvement
+                if (data.areas_of_improvement) {
+                    html += generateImprovementSection(data.areas_of_improvement);
+                }
+                
+                // Job Role Suggestions
+                if (data.preferred_job_roles && Array.isArray(data.preferred_job_roles)) {
+                    html += `
+                    <div class="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-6 border border-gray-700">
+                        <h3 class="text-xl font-semibold text-white mb-4 flex items-center">
+                            <svg class="w-5 h-5 mr-2 text-purple-400" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z"></path>
+                            </svg>
+                            Recommended Job Roles
+                        </h3>
+                        <div class="flex flex-wrap gap-2">
+                            ${data.preferred_job_roles.map(role => `<span class="px-4 py-2 bg-purple-500/20 text-purple-300 rounded-lg text-sm font-medium">${role}</span>`).join('')}
+                        </div>
+                    </div>`;
+                }
+                
+                html += '</div>';
+                return html;
+            }
+            
+            function generateEmploymentSection(employment) {
+                return `
+                <div class="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-6 border border-gray-700">
+                    <h3 class="text-xl font-semibold text-white mb-4 flex items-center">
+                        <svg class="w-5 h-5 mr-2 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M6 6V5a3 3 0 013-3h2a3 3 0 013 3v1h2a2 2 0 012 2v3.57A22.952 22.952 0 0110 13a22.95 22.95 0 01-8-1.43V8a2 2 0 012-2h2zm2-1a1 1 0 011-1h2a1 1 0 011 1v1H8V5zm1 5a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1z" clip-rule="evenodd"></path>
+                        </svg>
+                        Employment History
+                    </h3>
+                    <div class="space-y-4">
+                        ${employment.map(job => `
+                        <div class="border-l-4 border-blue-500 pl-4">
+                            <h4 class="text-lg font-semibold text-white">${job.position || 'Position not specified'}</h4>
+                            <p class="text-blue-400">${job.company || 'Company not specified'}</p>
+                            <p class="text-sm text-gray-400">${job.duration || 'Duration not specified'} ${job.location ? `• ${job.location}` : ''}</p>
+                            ${job.responsibilities ? `
+                            <div class="mt-2">
+                                <p class="text-sm font-medium text-gray-300">Responsibilities:</p>
+                                <ul class="list-disc list-inside text-sm text-gray-400 mt-1">
+                                    ${job.responsibilities.map(resp => `<li>${resp}</li>`).join('')}
+                                </ul>
+                            </div>` : ''}
+                        </div>`).join('')}
+                    </div>
+                </div>`;
+            }
+            
+            function generateProjectsSection(projects) {
+                return `
+                <div class="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-6 border border-gray-700">
+                    <h3 class="text-xl font-semibold text-white mb-4 flex items-center">
+                        <svg class="w-5 h-5 mr-2 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"></path>
+                        </svg>
+                        Projects & Research
+                    </h3>
+                    <div class="grid gap-4">
+                        ${projects.map(project => `
+                        <div class="bg-gray-700/30 rounded-lg p-4">
+                            <h4 class="text-lg font-semibold text-white">${project.name || 'Project name not specified'}</h4>
+                            <p class="text-gray-300 mt-2">${project.description || 'Description not available'}</p>
+                            ${project.technologies ? `
+                            <div class="mt-3">
+                                <p class="text-sm text-gray-400 mb-2">Technologies:</p>
+                                <div class="flex flex-wrap gap-1">
+                                    ${project.technologies.map(tech => `<span class="px-2 py-1 bg-blue-500/20 text-blue-300 rounded text-xs">${tech}</span>`).join('')}
+                                </div>
+                            </div>` : ''}
+                        </div>`).join('')}
+                    </div>
+                </div>`;
+            }
+            
+            function generateEducationSection(education) {
+                return `
+                <div class="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-6 border border-gray-700">
+                    <h3 class="text-xl font-semibold text-white mb-4 flex items-center">
+                        <svg class="w-5 h-5 mr-2 text-emerald-400" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762zM9.3 16.573A9.026 9.026 0 007 14.935v-3.957l1.818.78a3 3 0 002.364 0l5.508-2.361a11.026 11.026 0 01.25 3.762 1 1 0 01-.89.89 8.968 8.968 0 00-5.35 2.524 1 1 0 01-1.4 0zM6 18a1 1 0 001-1v-2.065a8.935 8.935 0 00-2-.712V17a1 1 0 001 1z"/>
+                        </svg>
+                        Education
+                    </h3>
+                    <div class="space-y-4">
+                        ${education.map(edu => `
+                        <div class="border-l-4 border-emerald-500 pl-4">
+                            <h4 class="text-lg font-semibold text-white">${edu.degree || 'Degree not specified'}</h4>
+                            <p class="text-emerald-400">${edu.institution || 'Institution not specified'}</p>
+                            <p class="text-sm text-gray-400">${edu.duration || 'Duration not specified'} ${edu.gpa ? `• GPA: ${edu.gpa}` : ''}</p>
+                            ${edu.relevant_coursework && edu.relevant_coursework.length > 0 ? `
+                            <div class="mt-2">
+                                <p class="text-sm font-medium text-gray-300">Relevant Coursework:</p>
+                                <div class="flex flex-wrap gap-1 mt-1">
+                                    ${edu.relevant_coursework.map(course => `<span class="px-2 py-1 bg-emerald-500/20 text-emerald-300 rounded text-xs">${course}</span>`).join('')}
+                                </div>
+                            </div>` : ''}
+                        </div>`).join('')}
+                    </div>
+                </div>`;
+            }
+            
+            function generateImprovementSection(improvement) {
+                return `
+                <div class="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-6 border border-gray-700">
+                    <h3 class="text-xl font-semibold text-white mb-4 flex items-center">
+                        <svg class="w-5 h-5 mr-2 text-orange-400" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                        </svg>
+                        Areas for Improvement
+                    </h3>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        ${improvement.pros ? `
+                        <div>
+                            <h4 class="text-lg font-medium text-green-400 mb-3">Strengths</h4>
+                            <ul class="space-y-2">
+                                ${improvement.pros.map(pro => `<li class="flex items-start"><svg class="w-5 h-5 text-green-400 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg><span class="text-gray-300">${pro}</span></li>`).join('')}
+                            </ul>
+                        </div>` : ''}
+                        ${improvement.cons ? `
+                        <div>
+                            <h4 class="text-lg font-medium text-orange-400 mb-3">Suggestions</h4>
+                            <ul class="space-y-2">
+                                ${improvement.cons.map(con => `<li class="flex items-start"><svg class="w-5 h-5 text-orange-400 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg><span class="text-gray-300">${con}</span></li>`).join('')}
+                            </ul>
+                        </div>` : ''}
+                    </div>
+                </div>`;
+            }
+            
+            // Display the data
+            displayDictionaryValues({{ data | tojson }});
+        </script>
+        {% endif %}
+        
+        <script>
+            function updateFileName() {
+                const input = document.getElementById('pdf_doc');
+                const analyzeBtn = document.getElementById('analyze-btn');
+                const btnText = document.getElementById('btn-text');
+                const uploadContent = document.getElementById('upload-content');
+                const uploadArea = document.getElementById('upload-area');
+                
+                if (input.files.length > 0) {
+                    const fileName = input.files[0].name;
+                    const fileSize = (input.files[0].size / 1024 / 1024).toFixed(1);
+                    
+                    uploadContent.innerHTML = `
+                        <div class="mx-auto h-12 w-12 text-green-400 mb-3">
+                            <svg fill="currentColor" viewBox="0 0 20 20" class="w-full h-full">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-lg font-semibold text-green-400 mb-2">File Selected</h3>
+                        <p class="text-white text-sm font-medium mb-1">${fileName}</p>
+                        <p class="text-gray-400 text-xs">Size: ${fileSize} MB • Ready to analyze</p>
+                    `;
+                    
+                    uploadArea.classList.remove('border-gray-600', 'bg-gradient-to-br', 'from-gray-800/30', 'to-gray-900/30');
+                    uploadArea.classList.add('border-green-500', 'bg-gradient-to-br', 'from-green-900/20', 'to-green-800/20');
+                    
+                    analyzeBtn.disabled = false;
+                    btnText.innerHTML = `
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                        </svg>
+                        Analyze Resume with AI
+                    `;
+                }
+            }
+            
+            // Form submission handling
+            document.querySelector('form').addEventListener('submit', function() {
+                const analyzeBtn = document.getElementById('analyze-btn');
+                const btnText = document.getElementById('btn-text');
+                const loadingSpinner = document.getElementById('loading-spinner');
+                
+                analyzeBtn.disabled = true;
+                btnText.style.display = 'none';
+                loadingSpinner.classList.remove('hidden');
+                
+                // Add a text element for loading state
+                const loadingText = document.createElement('span');
+                loadingText.textContent = 'Analyzing Resume...';
+                loadingText.id = 'loading-text';
+                analyzeBtn.appendChild(loadingText);
+                
+                // Show processing message
+                setTimeout(() => {
+                    if (document.getElementById('loading-text')) {
+                        document.getElementById('loading-text').textContent = 'Processing with AI...';
+                    }
+                }, 2000);
+            });
+
+            // Add scroll indicator when results are available
+            function addScrollIndicator() {
+                const heroSection = document.querySelector('.min-h-\\[calc\\(100vh-80px\\)\\]').parentElement;
+                
+                const scrollIndicator = document.createElement('div');
+                scrollIndicator.className = 'fixed bottom-6 left-1/2 transform -translate-x-1/2 animate-bounce z-50';
+                scrollIndicator.innerHTML = `
+                    <div class="bg-blue-600 text-white px-4 py-2 rounded-full shadow-lg flex items-center space-x-2 cursor-pointer hover:bg-blue-700 transition-colors" onclick="document.getElementById('results-section').scrollIntoView({behavior: 'smooth'})">
+                        <span class="text-sm font-medium">View Results</span>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/>
+                        </svg>
+                    </div>
+                `;
+                
+                heroSection.appendChild(scrollIndicator);
+                
+                // Remove indicator after user scrolls
+                window.addEventListener('scroll', function() {
+                    if (window.scrollY > 100) {
+                        scrollIndicator.remove();
+                    }
+                });
+            }
+        </script>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+</body>
+</html>
