@@ -37,7 +37,7 @@ InsideResume is an AI-powered resume parsing application built with Flask. It en
 
 ## 👀 Sneak Peek
 
-![image](https://github.com/pik1989/Resume-Parser-OpenAI/assets/34673684/5d206207-1b25-4dbe-8e11-add701b632e7)
+![image](https://github.com/user-attachments/assets/3da1933f-a48c-41ad-8451-f0c9559f44f8)
 
 ## ⚡️ Installation
 
