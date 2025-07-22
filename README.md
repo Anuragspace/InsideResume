@@ -1,43 +1,84 @@
-# Resume Parser App (Gen AI + Flask)
+# Intelligent Resume Parser App (Gen AI + Flask)
 
-### Objective
+## Overview
 
-Creating a resume parser app using Flask is a great way to help job seekers test the ATS (Applicant Tracking System) friendliness of their resumes. The app allows users to upload their resumes in PDF format, which are then parsed to extract various pieces of information such as full name, email ID, GitHub portfolio, LinkedIn ID, employment details, technical skills, and soft skills. The extracted information is then presented in JSON format, providing users with valuable insights into the effectiveness of their resumes.
+InsideResume is an AI-powered resume parsing application built with Flask. It enables job seekers to test the ATS (Applicant Tracking System) friendliness of their resumes by extracting and analyzing essential details. The app parses PDF resumes and provides a comprehensive JSON summary, helping users optimize their resumes for modern recruitment systems.
 
-To build such an app, you can leverage various tools and libraries, including Python, Flask, Pyresparser, pdfminer.six, docx2txt, and NLP (natural language processing) libraries such as nltk and spacy. These tools enable the extraction of essential information from resumes in PDF and DOCx formats, making the process automated and efficient.
+## Features
 
-The app's functionality aligns with the growing need for streamlined recruitment processes and the increasing reliance on technology to evaluate and process job applications. By providing users with a detailed analysis of their resumes, the app empowers job seekers to optimize their resumes for better visibility and compatibility with ATS.
+- **AI Resume Parsing:** Extracts personal details, employment history, education, skills, and more using advanced NLP and LLMs (Gemini AI or OpenAI).
+- **ATS Compatibility Score:** Evaluates how well a resume is likely to perform in automated recruitment systems.
+- **Skill Analysis:** Breaks down technical, soft, and domain skills from the document.
+- **Professional Summary & Suggestions:** Provides a parsed professional summary and areas of improvement.
+- **Job Role Recommendations:** Suggests relevant job roles based on resume content.
+- **Project & Research Extraction:** Identifies and summarizes projects and research work.
+- **Interactive Web UI:** Modern, responsive interface for resume upload and results visualization.
+- **Support for Google Gemini & OpenAI:** Easily switch between LLM providers (see [GEMINI_SETUP.md](GEMINI_SETUP.md) for Gemini integration).
 
-### Sneak Peak of the App
-![image](https://github.com/pik1989/Resume-Parser-OpenAI/assets/34673684/5d206207-1b25-4dbe-8e11-add701b632e7)
+## Tech Stack
 
-#### Overview: 
-This App is created for job seekers to test whether their resumes are ATS friendly or not, if our App is able to parse your details and show it, then assume that everything is good.
+- **Backend:** Python, Flask
+- **Frontend:** HTML5, CSS (Tailwind used in templates)
+- **AI/NLP:** Google Gemini API (default), OpenAI API (legacy/support), spaCy, NLTK, PyYAML
+- **Parsing:** pdfminer.six, docx2txt
+- **Other:** YAML for configuration, JSON for output
 
-#### Features: 
-Ability to extract specific information from resumes, the use of JSON format for presenting the extracted data, and the integration of various libraries and tools for parsing resumes.
+## File Structure
 
-#### Installation: 
-Run the pip install requirements.txt to install and set up the app, including any dependencies and prerequisites.
+- `app.py` – Flask web server (main entry point)
+- `resumeparser.py` – Core resume parsing logic, LLM integration, NLP extraction
+- `requirements.txt` – Python dependencies
+- `templates/index.html` – Main web UI (upload, results, scoring, suggestions)
+- `config.yaml` – Configuration file (API keys, provider selection)
+- `GEMINI_SETUP.md` – Instructions for switching to Google Gemini API
+- (other supporting files as needed)
 
-#### Usage: 
-Just upload your resume in pdf format, and see for yourself :)
+## Sneak Peek
 
+![image](https://github.com/user-attachments/assets/2056c1ce-16e3-45d3-9e8d-f2355d36941b)
 
-##### Running the program
+## Installation
 
-1. Clone the repository to your local machine
-2. Navigate to the project directory
-3. Install all the required libraries (just run pip install -r /path/to/requirements.txt)
-4. Provide your Open AI API key in the .yaml file
-5. Run the following command to start the chatbot -
-
+1. **Clone the repository:**
+    ```sh
+    git clone https://github.com/Anuragspace/InsideResume.git
+    cd InsideResume
     ```
+2. **Install dependencies:**
+    ```sh
+    pip install -r requirements.txt
+    ```
+3. **Setup AI Provider:**
+   - For Google Gemini, follow [GEMINI_SETUP.md](GEMINI_SETUP.md) and add your `GEMINI_API_KEY` to `config.yaml`.
+   - For OpenAI, add your API key to `config.yaml`.
+
+## Usage
+
+1. **Start the application:**
+    ```sh
     python app.py
     ```
+2. **Open your browser:**  
+   Go to [https://localhost:8000](https://localhost:8000)
+3. **Upload your resume (.pdf):**
+   - The app parses, analyzes, and displays ATS score, skills, summary, job roles, and suggestions.
 
-    ```
-    Go to: https://localhost:8000
-    ```
-    
-Overall, the development of a resume parser app using Flask represents a significant advancement in leveraging technology to support job seekers in optimizing their resumes for the modern recruitment landscape. This app aligns with the increasing demand for efficient and technology-driven solutions in the job application process, ultimately benefiting both job seekers and recruiters.
+## Running All
+
+- Ensure your API key is set in `config.yaml`.
+- Run `python app.py` and access via browser.
+- For Gemini setup/advanced options, see [GEMINI_SETUP.md](GEMINI_SETUP.md).
+
+---
+
+## Modern Recruitment Technology
+
+InsideResume leverages the latest in AI and NLP to help job seekers optimize their resumes for ATS and recruiter visibility, bridging the gap between applicants and modern hiring technology.
+
+## Contributing
+
+Pull requests and suggestions are welcome! Please open an issue for any bugs or feature requests.
+
+## License
+
+This project is released under the MIT License.
